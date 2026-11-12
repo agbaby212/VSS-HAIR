@@ -1,0 +1,17 @@
+# Packages and build output
+node_modules/
+dist/
+coverage/
+
+# Secrets: never commit these. The example file is the only exception.
+.env
+.env.*
+!.env.example
+
+# Hosting tools
+.vercel/
+
+# Editor and system files
+.DS_Store
+Thumbs.db
+*.log
