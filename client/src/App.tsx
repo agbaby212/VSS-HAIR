@@ -1,14 +1,19 @@
+import { Route, Routes } from "react-router-dom";
+import { Layout } from "./components/layout/Layout";
+import ComingSoon from "./pages/ComingSoon";
+import Home from "./pages/Home";
+import StyleGuide from "./pages/StyleGuide";
+
 export default function App() {
   return (
-    <main className="min-h-screen bg-stone-50 p-6 text-stone-900">
-      <h1 className="text-3xl font-bold">VSS Hair</h1>
-      <p className="mt-2 text-stone-600">Setup works. Tailwind is running.</p>
-      <button
-        type="button"
-        className="mt-4 rounded bg-stone-800 px-4 py-2 text-white hover:bg-stone-700"
-      >
-        Test button
-      </button>
-    </main>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<Home />} />
+        {/* A working tool for us, not a public page, so it only exists in `npm run dev` */}
+        {import.meta.env.DEV && <Route path="styleguide" element={<StyleGuide />} />}
+        {/* Every page we have not built yet */}
+        <Route path="*" element={<ComingSoon />} />
+      </Route>
+    </Routes>
   );
 }

@@ -1,3 +1,75 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-espresso: #2B231C; /* body text, header, footer */
+  --color-cocoa: #4F3B2D; /* primary buttons */
+  --color-ivory: #FCF9F3; /* page background */
+  --color-sand: #F4E9D6; /* soft panels, forms, placeholders */
+  --color-gold: #C1A26B; /* rings, borders. Decoration only on ivory */
+  --color-gold-light: #F5D99A; /* gold text on dark sections */
+  --color-gold-deep: #78581D; /* gold text on ivory, prices */
+
+  /* The foil: our golds as one gradient. Monogram, button edge, thin dividers */
+  --foil: linear-gradient(135deg, #78581D 0%, #C1A26B 30%, #F5D99A 50%, #C1A26B 70%, #78581D 100%);
+}
+
+@layer base {
+  body {
+    @apply bg-ivory font-sans text-base leading-relaxed text-espresso antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-medium leading-tight tracking-tight;
+  }
+
+  /* Keyboard focus must always be visible. gold-deep on ivory is 6.2:1 */
+  :focus-visible {
+    outline: 2px solid var(--color-gold-deep);
+    outline-offset: 3px;
+  }
+
+  /* On espresso, gold-deep is too dark to see, so dark sections use gold-light */
+  .on-dark :focus-visible {
+    outline-color: var(--color-gold-light);
+  }
+}
+
+@layer components {
+  /* A 1px line in foil */
+  .foil-divider {
+    height: 1px;
+    background-image: var(--foil);
+  }
+
+  /* Foil-coloured text. Large decoration only, never small text (contrast) */
+  .foil-text {
+    background-image: var(--foil);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Primary button: on hover the border turns to foil, the fill stays cocoa */
+  .btn-foil-edge:hover:not(:disabled) {
+    background:
+      linear-gradient(var(--color-cocoa), var(--color-cocoa)) padding-box,
+      var(--foil) border-box;
+  }
+}
+
+/* People who ask their device for less motion get almost none */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
