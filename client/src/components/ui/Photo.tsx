@@ -7,6 +7,7 @@ type PhotoProps = {
   height: number;
   shape?: "circle" | "arch" | "rect";
   rings?: 0 | 1 | 2; // fine gold rings, circle only
+  priority?: boolean;
   className?: string; // set the displayed size here, like "w-40"
 };
 
@@ -28,6 +29,7 @@ export function Photo({
   height,
   shape = "circle",
   rings = 0,
+  priority = false,
   className = "",
 }: PhotoProps) {
   const ringCount = shape === "circle" ? rings : 0; // rings only fit circles
@@ -39,7 +41,8 @@ export function Photo({
       alt={alt}
       width={width}
       height={height}
-      loading="lazy"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : undefined}
       decoding="async"
       style={style}
       className={`w-full object-cover ${shapeClass[shape]}`}
