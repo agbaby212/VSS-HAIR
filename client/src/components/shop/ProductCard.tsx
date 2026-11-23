@@ -21,7 +21,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
         width={600}
         height={featured ? 640 : 600} // the card's shape. object-cover crops real photos to fit
         shape={featured ? "arch" : "rect"}
-        className="w-full"
+        className={soldOut ? "w-full opacity-60" : "w-full"}
       />
       <h3 className={`mt-3 group-hover:underline ${featured ? "text-2xl" : "text-xl"}`}>{product.name}</h3>
       {soldOut ? (

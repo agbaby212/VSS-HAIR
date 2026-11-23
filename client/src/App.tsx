@@ -3,6 +3,9 @@ import { Layout } from "./components/layout/Layout";
 import ComingSoon from "./pages/ComingSoon";
 import Home from "./pages/Home";
 import StyleGuide from "./pages/StyleGuide";
+import Shop from "./pages/Shop";
+// ...
+        <Route path="shop" element={<Shop />} />
 
 export default function App() {
   return (

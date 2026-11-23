@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 
-// The logo file is JPG with a white background, so on espresso it sits on a white badge.
-// Never crop, recolour or redraw it.
-export function LogoBadge({ className = "h-12" }: { className?: string }) {
+// default height: a tall logo needs more room
+export function LogoBadge({ className = "h-16" }: { className?: string }) {
   return (
     <Link to="/" className="inline-flex rounded-md bg-white p-1.5">
-      <img src="/logo.jpg" alt="VSS Hair" className={`w-auto ${className}`} />
+      {/* width and height are the file's real size, so the page does not jump while it loads */}
+      <img src="/logo.jpg" alt="VSS Hair" width={720} height={1096} className={`w-auto ${className}`} />
     </Link>
   );
 }
