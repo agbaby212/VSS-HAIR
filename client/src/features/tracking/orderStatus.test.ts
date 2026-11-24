@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ORDER_STATUSES } from "../../shared";
-import { STATUS_LABELS, TIMELINE, statusMessage, stepState } from "./orderStatus";
+import { TIMELINE, statusLabel, statusMessage, stepState } from "./orderStatus";
 
 describe("stepState", () => {
   it("marks earlier steps done, the current one current, later ones upcoming", () => {
@@ -18,19 +18,29 @@ describe("stepState", () => {
 });
 
 describe("labels and messages", () => {
-  it("has a label and a message for every status", () => {
+  it("has a label and a message for every status, for delivery and pickup", () => {
     for (const status of ORDER_STATUSES) {
-      expect(STATUS_LABELS[status].length).toBeGreaterThan(0);
-      expect(statusMessage({ status, courierTracking: null }).length).toBeGreaterThan(0);
+      for (const fulfilment of ["delivery", "pickup"] as const) {
+        expect(statusLabel(status, fulfilment).length).toBeGreaterThan(0);
+        expect(statusMessage({ status, courierTracking: null, fulfilment }).length).toBeGreaterThan(0);
+      }
     }
   });
 
   it("shows pending as Awaiting payment", () => {
-    expect(STATUS_LABELS.pending).toBe("Awaiting payment");
+    expect(statusLabel("pending")).toBe("Awaiting payment");
   });
 
-  it("mentions the courier number is coming when shipped without one", () => {
-    expect(statusMessage({ status: "shipped", courierTracking: null })).toMatch(/will show here/);
-    expect(statusMessage({ status: "shipped", courierTracking: "DHL-1" })).not.toMatch(/will show here/);
+  it("uses pickup words only for pickup orders", () => {
+    expect(statusLabel("shipped", "delivery")).toBe("Shipped");
+    expect(statusLabel("shipped", "pickup")).toBe("Ready for pickup");
+    expect(statusLabel("delivered", "pickup")).toBe("Collected");
+    expect(statusLabel("paid", "pickup")).toBe("Paid");
+  });
+
+  it("mentions the courier number is coming when a delivery is shipped without one", () => {
+    expect(statusMessage({ status: "shipped", courierTracking: null, fulfilment: "delivery" })).toMatch(/will show here/);
+    expect(statusMessage({ status: "shipped", courierTracking: "DHL-1", fulfilment: "delivery" })).not.toMatch(/will show here/);
+    expect(statusMessage({ status: "shipped", courierTracking: null, fulfilment: "pickup" })).not.toMatch(/courier/);
   });
 });

@@ -23,4 +23,5 @@ export const photos = {
     hair_care: photo("", 400),
   } satisfies Record<Product["category"], SitePhoto>,
   bridalBand: photo("A bride in her finished wedding look", 800),
+    about: photo("The owner of VSS Hair", 600),
 } as const;

@@ -166,6 +166,7 @@ export function trackOrder(orderNumber: string, phone: string): TrackedOrder | n
   return {
     orderNumber: order.orderNumber,
     status: order.status,
+    fulfilment: order.fulfilment,
     createdAt: order.createdAt,
     paidAt: order.paidAt,
     totalKobo: order.totalKobo,

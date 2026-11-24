@@ -21,7 +21,7 @@ export function BridalBand() {
             Tell us your event date, venue, call time and party size. We hold your date for {hold} while you pay the{" "}
             {deposit} by bank transfer to the owner. Once she confirms it, nobody else can book that date.
           </p>
-          <Link to="/services" className={`${buttonClasses({ variant: "gold", size: "lg" })} mt-7`}>
+          <Link to="/services#bridal" className={`${buttonClasses({ variant: "gold", size: "lg" })} mt-7`}>
             Book bridal date
           </Link>
         </div>

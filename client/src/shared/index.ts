@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-export const CONTRACT_VERSION = "1.0.0"; // bump on every change, identical in both folders
-
+export const CONTRACT_VERSION = "1.1.0"; // bump on every change, identical in both folders
 /* ------------------------------------------------------------------ */
 /* Part 1: input schemas (frozen in Section 7, copied exactly)         */
 /* ------------------------------------------------------------------ */
@@ -158,6 +157,7 @@ export const createOrderResponseSchema = z.object({
 export const trackedOrderSchema = z.object({
   orderNumber: z.string(),
   status: z.enum(ORDER_STATUSES),
+  fulfilment: z.enum(["delivery", "pickup"]),
   createdAt: isoDateTime,
   paidAt: isoDateTime.nullable(),
   totalKobo: kobo,

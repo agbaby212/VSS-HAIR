@@ -3,12 +3,13 @@ import { CopyButton } from "../../components/ui/CopyButton";
 import { formatDateTime, naira } from "../../lib/format";
 import { whatsappChatUrl } from "../../lib/whatsapp";
 import type { TrackedOrder } from "../../shared";
-import { STATUS_LABELS, statusMessage } from "./orderStatus";
+import { statusLabel, statusMessage } from "./orderStatus";
 import { StatusTimeline } from "./StatusTimeline";
 
 export function TrackedOrderView({ order }: { order: TrackedOrder }) {
   const cancelled = order.status === "cancelled";
-  const showCourier = order.status === "shipped" || order.status === "delivered" || order.courierTracking !== null;
+  const showCourier =
+    order.fulfilment === "delivery" && (order.status === "shipped" || order.status === "delivered" || order.courierTracking !== null);
   const help = whatsappChatUrl(`Hello VSS Hair, I have a question about my order ${order.orderNumber}.`);
 
   return (
@@ -16,8 +17,8 @@ export function TrackedOrderView({ order }: { order: TrackedOrder }) {
       <h2 className="font-display text-3xl">Order {order.orderNumber}</h2>
       <p className="mt-1">Placed {formatDateTime(order.createdAt)}</p>
 
-      <p className="mt-5 font-display text-3xl text-gold-deep">{STATUS_LABELS[order.status]}</p>
-      <p className="mt-1 max-w-prose">{statusMessage(order)}</p>
+      <p className="mt-5 font-display text-3xl text-gold-deep">{statusLabel(order.status, order.fulfilment)}</p>
+      <p className="mt-2">{statusMessage(order)}</p>
 
       {showCourier && !cancelled && (
         <div className="mt-5 bg-sand p-4">
@@ -35,7 +36,7 @@ export function TrackedOrderView({ order }: { order: TrackedOrder }) {
 
       {!cancelled && (
         <div className="mt-8">
-          <StatusTimeline status={order.status} />
+          <StatusTimeline status={order.status} fulfilment={order.fulfilment} />
         </div>
       )}
 

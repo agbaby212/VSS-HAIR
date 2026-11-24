@@ -6,9 +6,15 @@ describe("isWhatsappUrl", () => {
     expect(isWhatsappUrl("https://wa.me/2348012345678?text=Hello")).toBe(true);
   });
 
+  it("accepts the WhatsApp send endpoint", () => {
+    expect(isWhatsappUrl("https://api.whatsapp.com/send?phone=2348012345678&text=Hello")).toBe(true);
+  });
+
   it("rejects look-alikes", () => {
     expect(isWhatsappUrl("http://wa.me/2348012345678")).toBe(false);
     expect(isWhatsappUrl("https://wa.me.evil.example/2348012345678")).toBe(false);
+    expect(isWhatsappUrl("https://wa.me/2348012345678.evil.example")).toBe(false);
+    expect(isWhatsappUrl("https://api.whatsapp.com/send?phone=not-a-number")).toBe(false);
     expect(isWhatsappUrl("https://evil.example/?next=https://wa.me/")).toBe(false);
     expect(isWhatsappUrl("javascript:alert(1)")).toBe(false);
   });
