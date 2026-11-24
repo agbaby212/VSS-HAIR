@@ -1,10 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { apiFetch } from "../../lib/api";
-import { servicesResponseSchema, travelZoneSchema } from "../../shared";
-import { slotSchema } from "../../shared";
+import { bookingSchema, servicesResponseSchema, slotSchema, travelZoneSchema } from "../../shared";
+import type { BookingInput } from "./bookingPayload";
 import type { SlotParams } from "./bookingDraft";
-// (add slotSchema to your existing import from "../../shared" instead of a second import line)
 
 export function useSlots(params: SlotParams | null) {
   return useQuery({
@@ -26,5 +25,29 @@ export function useTravelZones() {
   return useQuery({
     queryKey: ["travel-zones"],
     queryFn: ({ signal }) => apiFetch("/travel-zones", z.array(travelZoneSchema), { signal }),
+  });
+}
+// POST /bookings answers { booking, whatsappUrl } (Section 6). The URL was built by the server from the saved booking
+const createBookingResponseSchema = z.object({ booking: bookingSchema, whatsappUrl: z.string().url() });
+
+export function useCreateBooking() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    // Same pattern as your useCreateOrder in FE-T6
+    mutationFn: (payload: BookingInput) => apiFetch("/bookings", createBookingResponseSchema, { method: "POST", body: payload }),
+    // The booked time is no longer free, so every slot list must be fetched again
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["slots"] }),
+  });
+}
+
+const uploadResponseSchema = z.object({ url: z.string().url() });
+
+export function useUploadInspiration() {
+  return useMutation({
+    mutationFn: (file: File) => {
+      const body = new FormData();
+      body.append("file", file); // the field name the server must read (recorded in the handoff for BE-T5)
+      return apiFetch("/uploads/inspiration", uploadResponseSchema, { method: "POST", body });
+    },
   });
 }
