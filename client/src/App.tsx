@@ -11,6 +11,7 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 import ProductPage from "./pages/ProductPage";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import Shop from "./pages/Shop";
+import ManageBooking from "./pages/ManageBooking";
 import Book from "./pages/Book";
 import StyleGuide from "./pages/StyleGuide";
 import Contact from "./pages/Contact";
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="cart" element={<CartPage />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="order/:orderNumber" element={<OrderConfirmation />} />
+        <Route path="booking/manage/:token" element={<ManageBooking />} />
         <Route path="booking/:ref" element={<BookingConfirmation />} />
         <Route path="book" element={<Book />} />
         <Route path="gallery" element={<Gallery />} />
