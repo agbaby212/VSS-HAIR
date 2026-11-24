@@ -25,3 +25,15 @@ const dateTime = new Intl.DateTimeFormat("en-NG", {
 export function formatDateTime(iso: string): string {
   return dateTime.format(new Date(iso));
 }
+const timeOnly = new Intl.DateTimeFormat("en-NG", { timeStyle: "short", timeZone: "Africa/Lagos" });
+const dateLong = new Intl.DateTimeFormat("en-NG", { dateStyle: "full", timeZone: "Africa/Lagos" });
+
+// "2026-12-02T10:00:00+01:00" becomes something like "10:00 am"
+export function formatTime(iso: string): string {
+  return timeOnly.format(new Date(iso));
+}
+
+// "2026-12-02" becomes something like "Wednesday, 2 December 2026". Noon avoids any midnight edge case
+export function formatDateLong(date: string): string {
+  return dateLong.format(new Date(`${date}T12:00:00+01:00`));
+}

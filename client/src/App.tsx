@@ -9,7 +9,9 @@ import Gallery from "./pages/Gallery";
 import Home from "./pages/Home";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import ProductPage from "./pages/ProductPage";
+import BookingConfirmation from "./pages/BookingConfirmation";
 import Shop from "./pages/Shop";
+import Book from "./pages/Book";
 import StyleGuide from "./pages/StyleGuide";
 import Contact from "./pages/Contact";
 import DeliveryReturns from "./pages/DeliveryReturns";
@@ -26,6 +28,8 @@ export default function App() {
         <Route path="cart" element={<CartPage />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="order/:orderNumber" element={<OrderConfirmation />} />
+        <Route path="booking/:ref" element={<BookingConfirmation />} />
+        <Route path="book" element={<Book />} />
         <Route path="gallery" element={<Gallery />} />
         <Route path="about" element={<About />} />
         <Route path="faq" element={<FAQ />} />
