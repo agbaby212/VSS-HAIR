@@ -12,3 +12,10 @@ export function fromPriceKobo(product: Product): number {
   if (pool.length === 0) return 0;
   return Math.min(...pool.map((variant) => variant.priceKobo));
 }
+import type { Variant } from "../../shared";
+
+// "22 inch, Natural black" or null when a variant has no details (like a single hair-care item)
+export function variantLabel(variant: Variant): string | null {
+  const parts = [variant.lengthIn ? `${variant.lengthIn} inch` : null, variant.color, variant.density, variant.size].filter(Boolean);
+  return parts.length > 0 ? parts.join(", ") : null;
+}

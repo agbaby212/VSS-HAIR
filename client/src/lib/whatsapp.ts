@@ -5,3 +5,7 @@ export function whatsappChatUrl(text?: string): string {
   const base = `https://wa.me/${number}`;
   return text ? `${base}?text=${encodeURIComponent(text)}` : base;
 }
+// The order link comes from the server. We only open it if it really is a WhatsApp chat link
+export function isWhatsappUrl(url: string): boolean {
+  return url.startsWith("https://wa.me/080790555526") || url.startsWith("https://api.whatsapp.com/send?phone=23480790555526");
+}

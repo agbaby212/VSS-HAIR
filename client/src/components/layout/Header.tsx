@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { buttonClasses } from "../ui/buttonClasses";
 import { LogoBadge } from "./LogoBadge";
 import { helpLinks, mainLinks } from "./navLinks";
+import { useCart } from "../../context/useCart";
 
 // NavLink knows the current page, so we can mark it (it also sets aria-current for screen readers)
 function navClass({ isActive }: { isActive: boolean }): string {
@@ -13,6 +14,7 @@ function navClass({ isActive }: { isActive: boolean }): string {
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { count } = useCart();
   const closeMenu = () => setMenuOpen(false);
 
   return (
@@ -37,8 +39,12 @@ export function Header() {
           <NavLink to="/track" className={(state) => `${navClass(state)} hidden xl:inline`}>
             Track an order
           </NavLink>
-          <NavLink to="/cart" className={navClass}>
-            Bag
+          <NavLink
+            to="/cart"
+            className={navClass}
+            aria-label={count > 0 ? `Bag, ${count} ${count === 1 ? "item" : "items"}` : "Bag"}
+          >
+            Bag{count > 0 ? ` (${count})` : ""}
           </NavLink>
           <Link
             to="/book"

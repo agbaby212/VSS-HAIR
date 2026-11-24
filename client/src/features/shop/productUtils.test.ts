@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
 import type { Product } from "../../shared";
+import { variantLabel } from "./productUtils";
+
+describe("variantLabel", () => {
+  it("joins the details, or returns null when there are none", () => {
+    const base = product([{ priceKobo: 100, stock: 1 }]).variants[0];
+    expect(variantLabel({ ...base, lengthIn: 22, color: "Black", density: "180%", size: null })).toBe("22 inch, Black, 180%");
+    expect(variantLabel(base)).toBeNull();
+  });
+});
+
 import { fromPriceKobo, isSoldOut } from "./productUtils";
 
 function product(variants: { priceKobo: number; stock: number }[]): Product {

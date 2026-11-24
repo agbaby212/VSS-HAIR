@@ -48,7 +48,7 @@ export function Footer() {
 
         <div>
           <h2 className="text-xl text-gold-light">Visit and contact</h2>
-          <p className="mt-3">Ekea Junction Off Sapele Road Benin City</p>
+          <p className="mt-3">Ekae Junction Off Sapele Road Benin City</p>
           <p className="mt-1">Open 8am-6pm</p>
           <a
             href={whatsappChatUrl()}
