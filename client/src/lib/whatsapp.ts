@@ -9,3 +9,12 @@ export function whatsappChatUrl(text?: string): string {
 export function isWhatsappUrl(url: string): boolean {
   return url.startsWith("https://wa.me/080790555526") || url.startsWith("https://api.whatsapp.com/send?phone=23480790555526");
 }
+// The server puts the order message inside the link (?text=...). This reads it back out,
+// so the page shows exactly what the server prepared
+export function messageFromWhatsappUrl(url: string): string | null {
+  try {
+    return new URL(url).searchParams.get("text");
+  } catch {
+    return null;
+  }
+}
