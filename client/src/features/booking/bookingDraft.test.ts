@@ -12,6 +12,7 @@ const data: ServicesResponse = {
 };
 
 const full: BookingDraft = {
+  ...emptyDraft,
   kind: "service", itemId: serviceId, locationType: "home", travelZoneId: "zone", date: "2026-12-02", slotStart: "2026-12-02T10:00:00+01:00",
 };
 
@@ -20,6 +21,14 @@ describe("bookingReducer", () => {
     const next = bookingReducer(full, { type: "chooseDate", date: "2026-12-03" });
     expect(next.date).toBe("2026-12-03");
     expect(next.slotStart).toBeNull();
+    expect(next.slotUnavailable).toBe(false);
+  });
+
+  it("clears an unavailable time and shows the availability notice", () => {
+    const next = bookingReducer(full, { type: "slotUnavailable" });
+    expect(next.slotStart).toBeNull();
+    expect(next.slotUnavailable).toBe(true);
+    expect(bookingReducer(next, { type: "chooseSlot", slotStart: "2026-12-02T11:00:00+01:00" }).slotUnavailable).toBe(false);
   });
 
   it("clears the time when the area or the place changes", () => {

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { apiErrorBodySchema, dataEnvelope, pageMetaSchema, type PageMeta } from "../shared";
+import { ADMIN_UNAUTHORIZED_EVENT, clearAdminToken, getAdminToken } from "./adminToken";
 
 export const ADMIN_TOKEN_KEY = "vss_admin_token";
 
@@ -29,9 +30,9 @@ type RequestOptions = {
 
 function readToken(): string | null {
   try {
-    return localStorage.getItem(ADMIN_TOKEN_KEY);
+    return getAdminToken();
   } catch {
-    return null; // storage can be blocked (private mode), so never crash on it
+    return null;
   }
 }
 
@@ -39,9 +40,13 @@ function buildUrl(path: string, query?: RequestOptions["query"]): string {
   const base = import.meta.env.VITE_API_URL;
   if (!base) {
     // No hard-coded host (client rule): the developer must set it in .env.local
-    throw new ApiError(0, "CONFIG_ERROR", "VITE_API_URL is not set. Add it to client/.env.local and restart.");
+    throw new ApiError(0, "CONFIG_ERROR", "VITE_API_URL is not configured.");
   }
-  const url = new URL(`${base.replace(/\/$/, "")}${path}`);
+
+  const normalizedBase = base.replace(/\/+$/, "");
+  const normalizedPath = `/${path.replace(/^\/+/, "")}`;
+  const url = new URL(`${normalizedBase}${normalizedPath}`);
+
   for (const [key, value] of Object.entries(query ?? {})) {
     if (value !== undefined && value !== "") url.searchParams.set(key, String(value));
   }
@@ -64,13 +69,22 @@ async function request(path: string, options: RequestOptions): Promise<unknown> 
       method: options.method ?? "GET",
       headers,
       body:
-        options.body === undefined ? undefined : isForm ? (options.body as FormData) : JSON.stringify(options.body),
+        options.body === undefined
+          ? undefined
+          : isForm
+            ? (options.body as FormData)
+            : JSON.stringify(options.body),
       signal: options.signal,
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error; // a cancel is not a failure
     if (error instanceof ApiError) throw error;
     throw new ApiError(0, "NETWORK_ERROR", "We could not reach the server. Check your internet and try again.");
+  }
+
+  if (response.status === 401 && token) {
+    clearAdminToken();
+    window.dispatchEvent(new Event(ADMIN_UNAUTHORIZED_EVENT));
   }
 
   let json: unknown = null;

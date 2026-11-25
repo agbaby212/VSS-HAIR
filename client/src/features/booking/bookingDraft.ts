@@ -11,10 +11,11 @@ export type BookingDraft = {
   travelZoneId: string | null; // only for a home visit
   date: string | null; // "2026-12-02", a Lagos date
   slotStart: string | null; // the chosen time, as the server sent it
+  slotUnavailable: boolean;
 };
 
 export const emptyDraft: BookingDraft = {
-  kind: null, itemId: null, locationType: null, travelZoneId: null, date: null, slotStart: null,
+  kind: null, itemId: null, locationType: null, travelZoneId: null, date: null, slotStart: null, slotUnavailable: false,
 };
 
 export type BookingAction =
@@ -22,14 +23,15 @@ export type BookingAction =
   | { type: "chooseLocation"; locationType: LocationType }
   | { type: "chooseZone"; travelZoneId: string | null }
   | { type: "chooseDate"; date: string | null }
-  | { type: "chooseSlot"; slotStart: string | null };
+  | { type: "chooseSlot"; slotStart: string | null }
+  | { type: "slotUnavailable" };
 
 // The free times depend on the service, the place, the area and the date.
 // So if one of those changes, the chosen time may be wrong, and it is cleared
 export function bookingReducer(draft: BookingDraft, action: BookingAction): BookingDraft {
   switch (action.type) {
     case "chooseItem": {
-      const next = { ...draft, kind: action.kind, itemId: action.id, slotStart: null };
+      const next = { ...draft, kind: action.kind, itemId: action.id, slotStart: null, slotUnavailable: false };
       // A salon-only service cannot keep "at my place"
       if (!action.homeEligible && draft.locationType === "home") return { ...next, locationType: null, travelZoneId: null };
       return next;
@@ -40,13 +42,16 @@ export function bookingReducer(draft: BookingDraft, action: BookingAction): Book
         locationType: action.locationType,
         travelZoneId: action.locationType === "salon" ? null : draft.travelZoneId,
         slotStart: null,
+        slotUnavailable: false,
       };
     case "chooseZone":
-      return { ...draft, travelZoneId: action.travelZoneId, slotStart: null };
+      return { ...draft, travelZoneId: action.travelZoneId, slotStart: null, slotUnavailable: false };
     case "chooseDate":
-      return { ...draft, date: action.date, slotStart: null };
+      return { ...draft, date: action.date, slotStart: null, slotUnavailable: false };
     case "chooseSlot":
-      return { ...draft, slotStart: action.slotStart };
+      return { ...draft, slotStart: action.slotStart, slotUnavailable: false };
+    case "slotUnavailable":
+      return { ...draft, slotStart: null, slotUnavailable: true };
   }
 }
 

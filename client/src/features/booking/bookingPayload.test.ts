@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Bookable, BookingDraft } from "./bookingDraft";
+import { emptyDraft, type Bookable, type BookingDraft } from "./bookingDraft";
 import {
   buildBookingPayload, emptyDetails, fieldForPath, validateBookingDetails, type DetailsForm,
 } from "./bookingPayload";
@@ -9,6 +9,7 @@ const packageId = "00000005-0000-4000-8000-000000000001";
 const zoneId = "00000006-0000-4000-8000-000000000001";
 
 const salonDraft: BookingDraft = {
+  ...emptyDraft,
   kind: "service", itemId: serviceId, locationType: "salon", travelZoneId: null,
   date: "2026-12-02", slotStart: "2026-12-02T10:00:00+01:00",
 };

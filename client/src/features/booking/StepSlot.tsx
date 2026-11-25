@@ -11,24 +11,36 @@ export const MAX_DAYS_AHEAD = 90; // [REPLACE] the owner decides how far ahead p
 type Props = { draft: BookingDraft; dispatch: Dispatch<BookingAction> };
 
 export function StepSlot({ draft, dispatch }: Props) {
-  // "Today" in Lagos, not on the customer's device
-  const today = lagosDateString(Date.now());
-  const last = addDaysToDate(today, MAX_DAYS_AHEAD);
+  const [today, setToday] = useState<string | null>(null);
+  useEffect(() => {
+    const refreshToday = () => {
+      const currentToday = lagosDateString(Date.now());
+      setToday((previousToday) => (previousToday === currentToday ? previousToday : currentToday));
+    };
+    const initialTimer = window.setTimeout(refreshToday, 0);
+    const interval = window.setInterval(refreshToday, 60_000);
+    return () => {
+      window.clearTimeout(initialTimer);
+      window.clearInterval(interval);
+    };
+  }, []);
 
-  const dateOk = draft.date !== null && isDateInRange(draft.date, today, last);
+  const last = today === null ? null : addDaysToDate(today, MAX_DAYS_AHEAD);
+  const dateOk = today !== null && last !== null && draft.date !== null && isDateInRange(draft.date, today, last);
+  const displayDate = draft.date ?? today;
   const query = useSlots(dateOk ? slotParams(draft) : null); // no request for a bad or empty date
 
-  const [gone, setGone] = useState(false);
   // A refreshed list might no longer contain the time the customer chose (someone else took it)
   useEffect(() => {
     if (draft.slotStart && query.data && !query.data.some((slot) => slot.startAt === draft.slotStart)) {
-      setGone(true);
-      dispatch({ type: "chooseSlot", slotStart: null });
+      dispatch({ type: "slotUnavailable" });
     }
   }, [query.data, draft.slotStart, dispatch]);
 
   const dateError =
-    draft.date && !dateOk ? `Choose a date from today to ${formatDateLong(last)}.` : undefined;
+    draft.date && today !== null && last !== null && !dateOk
+      ? `Choose a date from today to ${formatDateLong(last)}.`
+      : undefined;
 
   return (
     <div className="space-y-6">
@@ -36,18 +48,17 @@ export function StepSlot({ draft, dispatch }: Props) {
         <TextField
           label="Date"
           type="date"
-          min={today}
-          max={last}
+          min={today ?? undefined}
+          max={last ?? undefined}
           value={draft.date ?? ""}
           error={dateError}
           onChange={(event) => {
-            setGone(false);
             dispatch({ type: "chooseDate", date: event.target.value === "" ? null : event.target.value });
           }}
         />
       </div>
 
-      {gone && (
+      {draft.slotUnavailable && (
         <p role="status" className="border-l-4 border-gold-deep pl-3 font-medium">
           That time is no longer free. Please choose another.
         </p>
@@ -64,17 +75,19 @@ export function StepSlot({ draft, dispatch }: Props) {
         </div>
       )}
 
-      {query.isError && <ErrorNotice error={query.error} onRetry={() => void query.refetch()} title="We could not load the times" />}
+      {dateOk && query.isError && (
+        <ErrorNotice error={query.error} onRetry={() => void query.refetch()} title="We could not load the times" />
+      )}
 
-      {query.data && query.data.length === 0 && (
+      {dateOk && query.data && query.data.length === 0 && displayDate && (
         <p role="status" className="max-w-prose">
-          There are no free times on {formatDateLong(draft.date ?? today)}. Please try another day.
+          There are no free times on {formatDateLong(displayDate)}. Please try another day.
         </p>
       )}
 
-      {query.data && query.data.length > 0 && (
+      {dateOk && query.data && query.data.length > 0 && displayDate && (
         <fieldset>
-          <legend className="font-medium">Free times on {formatDateLong(draft.date ?? today)}</legend>
+          <legend className="font-medium">Free times on {formatDateLong(displayDate)}</legend>
           <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
             {query.data.map((slot) => (
               <label key={slot.startAt}>
@@ -85,7 +98,6 @@ export function StepSlot({ draft, dispatch }: Props) {
                   value={slot.startAt}
                   checked={draft.slotStart === slot.startAt}
                   onChange={() => {
-                    setGone(false);
                     dispatch({ type: "chooseSlot", slotStart: slot.startAt });
                   }}
                   className="peer sr-only"

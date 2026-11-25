@@ -82,6 +82,7 @@ describe("draftFromBooking", () => {
   it("keeps the service, place and area, and leaves the date and time empty", () => {
     expect(draftFromBooking(home)).toEqual({
       kind: "service", itemId: serviceId, locationType: "home", travelZoneId: zoneId, date: null, slotStart: null,
+      slotUnavailable: false,
     });
   });
 

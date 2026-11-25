@@ -1,6 +1,6 @@
 import { bookingHandlers } from "./bookings";
 import { catalogHandlers } from "./catalog";
 import { orderHandlers } from "./orders";
+import { adminHandlers } from "./admin";
 
-// Admin handlers join this list in FE-T11 to FE-T15
-export const handlers = [...catalogHandlers, ...orderHandlers, ...bookingHandlers];
+export const handlers = [...catalogHandlers, ...orderHandlers, ...bookingHandlers, ...adminHandlers];
